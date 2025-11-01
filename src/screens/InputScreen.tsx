@@ -1,11 +1,53 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+    Alert,
+    Animated,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from "react-native";
 import { styles } from "./InputScreen.styles";
 
 export default function InputScreen() {
   const [ingredients, setIngredients] = useState<string[]>([]);
 
+  // 食材追加ボタンのフェードアニメーション
+  const addButtonOpacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(addButtonOpacity, {
+      toValue: ingredients.length >= 5 ? 0 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [ingredients]);
+
+  // 献立提案ボタンのスケールアニメーション
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      friction: 3,
+      tension: 40,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 3,
+      tension: 40,
+    }).start();
+  };
+
+  // 食材追加（最大5つ）
   const handleAddIngredient = () => {
     if (ingredients.length >= 5) {
       Alert.alert("制限", "食材は5つまで追加できます");
@@ -20,17 +62,20 @@ export default function InputScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>食材を入力</Text>
         <View style={{ width: 24 }} />
       </View>
 
+      {/* Main content */}
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>家にある食材を教えてください</Text>
         <Text style={styles.description}>
           パントリー、冷蔵庫、冷凍庫など、全ての食材を追加してください（最大5つ）
         </Text>
 
+        {/* 食材入力欄 */}
         {ingredients.map((item, index) => (
           <View key={index} style={styles.inputRow}>
             <TextInput
@@ -53,18 +98,29 @@ export default function InputScreen() {
           </View>
         ))}
 
-        {/* 食材追加ボタン */}
-        <TouchableOpacity style={styles.addButton} onPress={handleAddIngredient}>
-          <MaterialIcons name="add-circle" size={22} color="#13ec13" />
-          <Text style={styles.addButtonText}>食材を追加</Text>
-        </TouchableOpacity>
+        {/* 食材追加ボタン（フェードアウト） */}
+        <Animated.View style={{ opacity: addButtonOpacity }}>
+          {ingredients.length < 5 && (
+            <TouchableOpacity style={styles.addButton} onPress={handleAddIngredient}>
+              <MaterialIcons name="add-circle" size={22} color="#13ec13" />
+              <Text style={styles.addButtonText}>食材を追加</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
       </ScrollView>
 
+      {/* 立体感＆アニメーション付き献立提案ボタン */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.submitButton}>
-          <Text style={styles.submitText}>献立を提案してもらう</Text>
-          <MaterialIcons name="arrow-forward" size={22} color="#0d1b0d" />
-        </TouchableOpacity>
+        <TouchableWithoutFeedback
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={() => console.log("献立提案！")}
+        >
+          <Animated.View style={[styles.stylishButton, { transform: [{ scale: scaleAnim }] }]}>
+            <Text style={styles.submitText}>献立を提案してもらう</Text>
+            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          </Animated.View>
+        </TouchableWithoutFeedback>
       </View>
     </View>
   );
