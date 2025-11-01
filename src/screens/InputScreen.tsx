@@ -1,13 +1,16 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "./InputScreen.styles";
 
 export default function InputScreen() {
-  const [ingredients, setIngredients] = useState<string[]>([]); // 配列で入力欄を管理
+  const [ingredients, setIngredients] = useState<string[]>([]);
 
-  // 追加ボタンを押したときに空欄を追加
   const handleAddIngredient = () => {
+    if (ingredients.length >= 5) {
+      Alert.alert("制限", "食材は5つまで追加できます");
+      return;
+    }
     setIngredients([...ingredients, ""]);
   };
 
@@ -25,10 +28,9 @@ export default function InputScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>家にある食材を教えてください</Text>
         <Text style={styles.description}>
-          パントリー、冷蔵庫、冷凍庫など、全ての食材を追加してください。
+          パントリー、冷蔵庫、冷凍庫など、全ての食材を追加してください（最大5つ）
         </Text>
 
-        {/* 食材入力欄 */}
         {ingredients.map((item, index) => (
           <View key={index} style={styles.inputRow}>
             <TextInput
