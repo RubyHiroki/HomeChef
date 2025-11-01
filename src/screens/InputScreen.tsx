@@ -4,7 +4,7 @@ import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-nativ
 import { styles } from "./InputScreen.styles";
 
 export default function InputScreen() {
-  const [ingredients, setIngredients] = useState<string[]>(["豚肉", "玉ねぎ"]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [newIngredient, setNewIngredient] = useState("");
 
   const handleAddIngredient = () => {
@@ -21,9 +21,6 @@ export default function InputScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <MaterialIcons name="arrow-back" size={24} color="#0d1b0d" />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>食材を入力</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -35,6 +32,7 @@ export default function InputScreen() {
           パントリー、冷蔵庫、冷凍庫など、全ての食材を追加してください。
         </Text>
 
+        {/* 既存食材 */}
         {ingredients.map((item, index) => (
           <View key={index} style={styles.inputRow}>
             <TextInput
@@ -57,7 +55,7 @@ export default function InputScreen() {
           </View>
         ))}
 
-        {/* 新しい食材入力欄 */}
+        {/* 新規食材入力 */}
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
@@ -78,7 +76,7 @@ export default function InputScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* 献立提案ボタン */}
+      {/* 提案ボタン */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.submitButton}>
           <Text style={styles.submitText}>献立を提案してもらう</Text>

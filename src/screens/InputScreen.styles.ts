@@ -17,8 +17,8 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#0d1b0d",
-    textAlign: "center",
     flex: 1,
+    textAlign: "center",
   },
   content: {
     paddingHorizontal: 16,
