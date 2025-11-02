@@ -25,9 +25,22 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
     }
 
     const prompt = `
-あなたは料理のエキスパートです。
-次の食材を使った簡単な料理を3つ提案してください: ${validIngredients.join(", ")}
-必ずJSON形式で {"meals":[{"name":"料理名","ingredients":["材料1","材料2"],"steps":["手順1","手順2"]}]} を返してください。
+システム: あなたは料理のエキスパートAIです。与えられた食材を使った料理のレシピをJSON形式で提供します。
+マークダウン記法は使わず、純粋なJSONオブジェクトのみを返してください。
+説明文や前置きは一切不要です。
+
+ユーザー: 次の食材を使った簡単な料理を3つ提案してください: ${validIngredients.join(", ")}
+
+出力形式:
+{
+  "meals": [
+    {
+      "name": "料理名",
+      "ingredients": ["材料1", "材料2"],
+      "steps": ["手順1", "手順2"]
+    }
+  ]
+}
 `;
 
     console.log("APIリクエスト開始...");
@@ -71,31 +84,76 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
 
     // ネスト構造に柔軟対応してテキスト抽出
     const candidate = data.candidates?.[0];
-    const text =
-      candidate?.content?.[0]?.parts?.[0]?.text ||
-      candidate?.content?.[0]?.text ||
-      candidate?.output?.[0]?.content?.[0]?.text ||
-      "";
+    
+    // ログに出ているレスポンス構造に合わせて修正
+    const text = candidate?.content?.parts?.[0]?.text || "";
+    
+    console.log("抽出されたテキスト:", text);
 
     if (!text) {
       throw new Error("AIから有効な応答が得られませんでした。候補が空です。");
     }
 
     // JSONブロック抽出（余計な文章やマークダウンを除去）
-    const jsonMatch =
-      text.match(/```json\s*([\s\S]*?)```/) || // ```json ... ```
-      text.match(/```[\s\S]*?```/) ||         // ``` ... ```
-      text.match(/{[\s\S]*}/);                // {...}
-
+    console.log("JSONパターン検索開始");
+    
+    // 正規表現を個別に試して詳細なログを出力
+    const jsonPattern1 = /```json\s*([\s\S]*?)```/;
+    const jsonPattern2 = /```([\s\S]*?)```/;
+    const jsonPattern3 = /{[\s\S]*}/;
+    
+    const match1 = text.match(jsonPattern1);
+    const match2 = text.match(jsonPattern2);
+    const match3 = text.match(jsonPattern3);
+    
+    console.log("パターン1(```json)マッチ:", !!match1);
+    console.log("パターン2(```)マッチ:", !!match2);
+    console.log("パターン3({})マッチ:", !!match3);
+    
+    // 最初に見つかったマッチを使用
+    let jsonMatch = match1 || match2 || match3;
+    
     if (!jsonMatch) {
       console.error("JSON部分が見つかりません:", text);
       throw new Error("AIの応答にJSON形式が含まれていません。");
     }
-
-    const jsonText = jsonMatch[1] || jsonMatch[0];
+    
+    // マッチしたパターンに応じて適切に抽出
+    let jsonText;
+    if (match1) {
+      jsonText = match1[1]; // ```json ... ``` の中身
+      console.log("パターン1でJSON抽出");
+    } else if (match2) {
+      jsonText = match2[1]; // ``` ... ``` の中身
+      console.log("パターン2でJSON抽出");
+    } else {
+      jsonText = match3[0]; // { ... } そのもの
+      console.log("パターン3でJSON抽出");
+    }
 
     try {
-      const result = JSON.parse(jsonText);
+      // JSONテキストをクリーンアップ（余分な空白や改行を削除）
+      const cleanedJsonText = jsonText.trim();
+      console.log("パース前のJSONテキスト:", cleanedJsonText);
+      
+      // 最後の手段として、JSONっぽいテキストから直接オブジェクトを作成
+      let result;
+      try {
+        result = JSON.parse(cleanedJsonText);
+      } catch (initialError) {
+        console.error("最初のパース失敗:", initialError);
+        
+        // 余分な文字を取り除いて再試行
+        const extractedJson = cleanedJsonText.match(/{[\s\S]*}/);
+        if (extractedJson) {
+          console.log("抽出されたJSONテキスト:", extractedJson[0]);
+          result = JSON.parse(extractedJson[0]);
+        } else {
+          throw initialError;
+        }
+      }
+      
+      console.log("パース結果:", result);
 
       if (!result.meals || !Array.isArray(result.meals) || result.meals.length === 0) {
         throw new Error("有効な献立データが含まれていません");
