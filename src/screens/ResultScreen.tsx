@@ -2,12 +2,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Image,
     ScrollView,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
 import { MealSuggestion, suggestMeals } from "../services/geminiService";
+import { getDefaultFoodImage } from "../services/imageService";
 import { styles } from "./ResultScreen.styles";
 
 interface ResultScreenProps {
@@ -15,18 +17,36 @@ interface ResultScreenProps {
   onBack: () => void;
 }
 
+interface MealWithImage {
+  name: string;
+  ingredients: string[];
+  steps: string[];
+  imageUrl: string;
+}
+
 export default function ResultScreen({ ingredients, onBack }: ResultScreenProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mealSuggestion, setMealSuggestion] = useState<MealSuggestion | null>(null);
+  const [mealsWithImages, setMealsWithImages] = useState<MealWithImage[]>([]);
 
   const fetchMealSuggestions = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      // 献立提案を取得
       const result = await suggestMeals(ingredients);
       setMealSuggestion(result);
+      
+      // 各料理に画像を追加
+      const withImages = result.meals.map(meal => ({
+        ...meal,
+        // 料理名からデフォルト画像を取得
+        imageUrl: getDefaultFoodImage(meal.name)
+      }));
+      
+      setMealsWithImages(withImages);
     } catch (err) {
       setError(err instanceof Error ? err.message : "献立の提案に失敗しました");
     } finally {
@@ -38,19 +58,24 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
     fetchMealSuggestions();
   }, []);
 
+  // 詳細を表示する処理（今回は実装しない）
+  const handleViewDetails = (meal: any) => {
+    console.log("詳細を表示:", meal.name);
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <MaterialIcons name="arrow-back" size={24} color="#0d1b0d" />
+            <MaterialIcons name="arrow-back" size={24} color="#333333" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>献立を提案中</Text>
-          <View style={{ width: 24 }} />
+          <Text style={styles.headerTitle}>AIからの献立提案</Text>
+          <View style={styles.emptyView} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#13ec13" />
-          <Text style={{ marginTop: 16, color: "#3a4a3a" }}>
+          <ActivityIndicator size="large" color="#81C784" />
+          <Text style={styles.loadingText}>
             あなたの食材から最適な献立を考えています...
           </Text>
         </View>
@@ -63,10 +88,10 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <MaterialIcons name="arrow-back" size={24} color="#0d1b0d" />
+            <MaterialIcons name="arrow-back" size={24} color="#333333" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>エラー</Text>
-          <View style={{ width: 24 }} />
+          <View style={styles.emptyView} />
         </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -82,34 +107,41 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <MaterialIcons name="arrow-back" size={24} color="#0d1b0d" />
+          <MaterialIcons name="arrow-back" size={24} color="#333333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>献立の提案</Text>
-        <View style={{ width: 24 }} />
+        <Text style={styles.headerTitle}>AIからの献立提案</Text>
+        <View style={styles.emptyView} />
       </View>
       
       <ScrollView style={styles.content}>
-        {mealSuggestion?.meals.map((meal, index) => (
-          <View key={index} style={styles.mealCard}>
-            <Text style={styles.mealTitle}>{meal.name}</Text>
-            
-            <Text style={styles.sectionTitle}>材料</Text>
-            {meal.ingredients.map((ingredient, i) => (
-              <View key={i} style={styles.ingredientItem}>
-                <View style={styles.bulletPoint} />
-                <Text style={styles.ingredientText}>{ingredient}</Text>
+        <Text style={styles.introText}>入力された食材から、こちらの{mealsWithImages.length}つのレシピを提案します。</Text>
+        
+        <View style={styles.cardList}>
+          {mealsWithImages.map((meal, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.mealCard}
+              onPress={() => handleViewDetails(meal)}
+            >
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: meal.imageUrl }}
+                  style={styles.mealImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.imageFade} />
               </View>
-            ))}
-            
-            <Text style={styles.sectionTitle}>調理手順</Text>
-            {meal.steps.map((step, i) => (
-              <View key={i} style={styles.stepItem}>
-                <Text style={styles.stepNumber}>{i + 1}.</Text>
-                <Text style={styles.stepText}>{step}</Text>
+              
+              <View style={styles.cardContent}>
+                <Text style={styles.mealTitle}>{meal.name}</Text>
+                <View style={styles.viewMoreContainer}>
+                  <Text style={styles.viewMoreText}>詳細を見る</Text>
+                  <MaterialIcons name="arrow-forward" size={18} color="#81C784" style={{ marginLeft: 4 }} />
+                </View>
               </View>
-            ))}
-          </View>
-        ))}
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );

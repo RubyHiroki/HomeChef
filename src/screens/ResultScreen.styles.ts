@@ -1,30 +1,115 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  // 基本レイアウト
   container: {
     flex: 1,
-    backgroundColor: "#f6f8f6",
+    backgroundColor: "#F5F5F5",
   },
+  
+  // ヘッダー
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
+    backgroundColor: "rgba(245, 245, 245, 0.8)",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#0d1b0d",
+    textAlign: "center",
+    flex: 1,
+    color: "#333333",
   },
+  backButton: {
+    padding: 8,
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyView: {
+    width: 40,
+  },
+  
+  // コンテンツ
   content: {
     flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
   },
+  introText: {
+    fontSize: 14,
+    color: "#666666",
+    marginVertical: 16,
+    paddingHorizontal: 2,
+  },
+  
+  // 料理カード
+  cardList: {
+    gap: 24,
+  },
+  mealCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  imageContainer: {
+    position: "relative",
+    height: 160,
+  },
+  mealImage: {
+    width: "100%",
+    height: "100%",
+  },
+  imageFade: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  cardContent: {
+    padding: 16,
+  },
+  mealTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#333333",
+  },
+  viewMoreContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  viewMoreText: {
+    fontSize: 14,
+    color: "#81C784",
+    fontWeight: "500",
+  },
+  
+  // ローディング
   loadingContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
+  loadingText: {
+    marginTop: 16,
+    color: "#666666",
+  },
+  
+  // エラー
   errorContainer: {
     flex: 1,
     alignItems: "center",
@@ -38,7 +123,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: "#13ec13",
+    backgroundColor: "#81C784",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
@@ -46,65 +131,5 @@ export const styles = StyleSheet.create({
   retryButtonText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  mealCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  mealTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#0d1b0d",
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#3a4a3a",
-    marginTop: 12,
-    marginBottom: 6,
-  },
-  ingredientItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 4,
-  },
-  bulletPoint: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#13ec13",
-    marginRight: 8,
-  },
-  ingredientText: {
-    fontSize: 14,
-    color: "#0d1b0d",
-  },
-  stepItem: {
-    flexDirection: "row",
-    marginBottom: 8,
-  },
-  stepNumber: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#13ec13",
-    marginRight: 8,
-    width: 24,
-  },
-  stepText: {
-    fontSize: 14,
-    color: "#0d1b0d",
-    flex: 1,
-  },
-  backButton: {
-    padding: 8,
   },
 });
