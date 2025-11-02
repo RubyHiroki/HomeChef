@@ -54,14 +54,6 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
           />
         </View>
 
-        {/* タイトルと説明 */}
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>{recipe.name}</Text>
-          {recipe.description && (
-            <Text style={styles.description}>{recipe.description}</Text>
-          )}
-        </View>
-
         {/* 材料 */}
         <View style={styles.ingredientsSection}>
           <Text style={styles.sectionTitle}>材料</Text>
