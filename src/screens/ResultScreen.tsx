@@ -1,4 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 import { MealSuggestion, suggestMeals } from "../services/geminiService";
 import { getDefaultFoodImage } from "../services/imageService";
+import RecipeDetailScreen from "./RecipeDetailScreen";
 import { styles } from "./ResultScreen.styles";
 
 interface ResultScreenProps {
@@ -22,6 +24,7 @@ interface MealWithImage {
   ingredients: string[];
   steps: string[];
   imageUrl: string;
+  description?: string;
 }
 
 export default function ResultScreen({ ingredients, onBack }: ResultScreenProps) {
@@ -29,6 +32,7 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
   const [error, setError] = useState<string | null>(null);
   const [mealSuggestion, setMealSuggestion] = useState<MealSuggestion | null>(null);
   const [mealsWithImages, setMealsWithImages] = useState<MealWithImage[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<MealWithImage | null>(null);
 
   const fetchMealSuggestions = async () => {
     setLoading(true);
@@ -43,7 +47,9 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
       const withImages = result.meals.map(meal => ({
         ...meal,
         // 料理名からデフォルト画像を取得
-        imageUrl: getDefaultFoodImage(meal.name)
+        imageUrl: getDefaultFoodImage(meal.name),
+        // 説明文を追加（APIから返ってこない場合はundefined）
+        description: undefined
       }));
       
       setMealsWithImages(withImages);
@@ -58,10 +64,25 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
     fetchMealSuggestions();
   }, []);
 
-  // 詳細を表示する処理（今回は実装しない）
-  const handleViewDetails = (meal: any) => {
-    console.log("詳細を表示:", meal.name);
+  // 詳細を表示する処理
+  const handleViewDetails = (meal: MealWithImage) => {
+    setSelectedRecipe(meal);
   };
+  
+  // 詳細画面から戻る処理
+  const handleBackFromDetails = () => {
+    setSelectedRecipe(null);
+  };
+
+  // 選択されたレシピがある場合は詳細画面を表示
+  if (selectedRecipe) {
+    return (
+      <RecipeDetailScreen 
+        recipe={selectedRecipe} 
+        onBack={handleBackFromDetails} 
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -129,7 +150,11 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
                   style={styles.mealImage}
                   resizeMode="cover"
                 />
-                <View style={styles.imageFade} />
+                <LinearGradient
+                  colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
+                  locations={[0, 0.6, 1]}
+                  style={styles.imageFade}
+                />
               </View>
               
               <View style={styles.cardContent}>

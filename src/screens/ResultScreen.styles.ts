@@ -73,11 +73,13 @@ export const styles = StyleSheet.create({
   },
   imageFade: {
     position: "absolute",
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
-    height: 80,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    bottom: 0,
+    // 上から下へのグラデーションを設定
+    // React Nativeでは線形グラデーションを直接スタイルとして設定できないため、
+    // LinearGradientコンポーネントを使用します（コード内で実装）
   },
   cardContent: {
     padding: 16,
