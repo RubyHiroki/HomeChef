@@ -52,7 +52,7 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
             style={styles.recipeImage}
             resizeMode="cover"
           />
-        </View>
+          </View>
 
         {/* 材料 */}
         <View style={styles.ingredientsSection}>

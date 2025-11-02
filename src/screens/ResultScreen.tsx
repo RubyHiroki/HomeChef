@@ -10,7 +10,7 @@ import {
     View,
 } from "react-native";
 import { MealSuggestion, suggestMeals } from "../services/geminiService";
-import { getDefaultFoodImage } from "../services/imageService";
+import { getFoodImage } from "../services/imageService";
 import RecipeDetailScreen from "./RecipeDetailScreen";
 import { styles } from "./ResultScreen.styles";
 
@@ -46,8 +46,8 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
       // 各料理に画像を追加
       const withImages = result.meals.map(meal => ({
         ...meal,
-        // 料理名からデフォルト画像を取得
-        imageUrl: getDefaultFoodImage(meal.name),
+        // 料理名と材料から適切な画像を取得
+        imageUrl: getFoodImage(meal.name, meal.ingredients),
         // 説明文を追加（APIから返ってこない場合はundefined）
         description: undefined
       }));
