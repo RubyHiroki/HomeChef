@@ -6,8 +6,16 @@ if (!API_KEY) {
   console.error("APIキーが設定されていません。.envファイルを確認してください。");
 }
 
+export interface MealSuggestion {
+  meals: {
+    name: string;
+    ingredients: string[];
+    steps: string[];
+  }[];
+}
+
 /**
- * 食材リストから献立を提案する
+ * 食材リストから献立を提案する（Gemini 2.5 Pro対応・長文対応版）
  */
 export async function suggestMeals(ingredients: string[]): Promise<MealSuggestion> {
   try {
@@ -17,30 +25,23 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
     }
 
     const prompt = `
-あなたは料理のエキスパートです。次の食材を使った簡単な料理を3つ提案してください: ${validIngredients.join(", ")}
-
-必ず以下のJSON形式だけで回答してください。説明文は不要です:
-{"meals":[{"name":"料理名","ingredients":["材料1","材料2"],"steps":["手順1","手順2"]}]}
-
-マークダウン記法は使わず、純粋なJSONだけを返してください。
+あなたは料理のエキスパートです。
+次の食材を使った簡単な料理を3つ提案してください: ${validIngredients.join(", ")}
+必ずJSON形式で {"meals":[{"name":"料理名","ingredients":["材料1","材料2"],"steps":["手順1","手順2"]}]} を返してください。
 `;
 
     console.log("APIリクエスト開始...");
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateContent?key=${API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${API_KEY}`;
 
     const response = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [
           {
             role: "user",
-            parts: [
-              { text: prompt }
-            ]
+            parts: [{ text: prompt }]
           }
         ],
         generationConfig: {
@@ -48,7 +49,7 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
           topK: 32,
           topP: 1,
           candidateCount: 1,
-          maxOutputTokens: 1024
+          maxOutputTokens: 4096 // 長い手順にも対応
         },
         safetySettings: [
           {
@@ -66,18 +67,34 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
     }
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.[0]?.parts?.[0]?.text;
+    console.log("Full API response:", JSON.stringify(data, null, 2));
 
-    if (!text) throw new Error("AIから有効な応答が得られませんでした");
+    // ネスト構造に柔軟対応してテキスト抽出
+    const candidate = data.candidates?.[0];
+    const text =
+      candidate?.content?.[0]?.parts?.[0]?.text ||
+      candidate?.content?.[0]?.text ||
+      candidate?.output?.[0]?.content?.[0]?.text ||
+      "";
 
-    // JSONパース
+    if (!text) {
+      throw new Error("AIから有効な応答が得られませんでした。候補が空です。");
+    }
+
+    // JSONブロック抽出（余計な文章やマークダウンを除去）
+    const jsonMatch =
+      text.match(/```json\s*([\s\S]*?)```/) || // ```json ... ```
+      text.match(/```[\s\S]*?```/) ||         // ``` ... ```
+      text.match(/{[\s\S]*}/);                // {...}
+
+    if (!jsonMatch) {
+      console.error("JSON部分が見つかりません:", text);
+      throw new Error("AIの応答にJSON形式が含まれていません。");
+    }
+
+    const jsonText = jsonMatch[1] || jsonMatch[0];
+
     try {
-      const jsonMatch =
-        text.match(/```json\n([\s\S]*?)\n```/) ||
-        text.match(/```\n([\s\S]*?)\n```/) ||
-        text.match(/{[\s\S]*}/);
-
-      const jsonText = jsonMatch ? jsonMatch[1] || jsonMatch[0] : text;
       const result = JSON.parse(jsonText);
 
       if (!result.meals || !Array.isArray(result.meals) || result.meals.length === 0) {
@@ -86,21 +103,12 @@ export async function suggestMeals(ingredients: string[]): Promise<MealSuggestio
 
       return result;
     } catch (parseError) {
-      console.error("JSONパースエラー:", parseError, "テキスト:", text);
-      throw new Error("レスポンスの解析に失敗しました");
+      console.error("JSONパースエラー:", parseError, "テキスト:", jsonText);
+      throw new Error("レスポンスのJSON解析に失敗しました");
     }
 
   } catch (error: any) {
     console.error("Gemini API エラー:", error);
     throw new Error(error.message || "献立提案に失敗しました");
   }
-}
-
-// 献立提案の型定義
-export interface MealSuggestion {
-  meals: {
-    name: string;
-    ingredients: string[];
-    steps: string[];
-  }[];
 }
