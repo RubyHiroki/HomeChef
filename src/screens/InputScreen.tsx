@@ -11,9 +11,11 @@ import {
     View,
 } from "react-native";
 import { styles } from "./InputScreen.styles";
+import ResultScreen from "./ResultScreen";
 
 export default function InputScreen() {
   const [ingredients, setIngredients] = useState<string[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   // 食材追加ボタンのフェードアニメーション
   const addButtonOpacity = useRef(new Animated.Value(1)).current;
@@ -59,6 +61,29 @@ export default function InputScreen() {
   const handleRemoveIngredient = (index: number) => {
     setIngredients(ingredients.filter((_, i) => i !== index));
   };
+
+  const handleSuggestMeals = () => {
+    // 空の入力がある場合は除外
+    const validIngredients = ingredients.filter(item => item.trim() !== "");
+    
+    if (validIngredients.length === 0) {
+      Alert.alert("入力エラー", "少なくとも1つの食材を入力してください");
+      return;
+    }
+    
+    // 結果画面を表示
+    setShowResults(true);
+  };
+
+  // 結果画面から戻る処理
+  const handleBackFromResults = () => {
+    setShowResults(false);
+  };
+
+  // 結果画面を表示
+  if (showResults) {
+    return <ResultScreen ingredients={ingredients} onBack={handleBackFromResults} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -114,7 +139,7 @@ export default function InputScreen() {
         <TouchableWithoutFeedback
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          onPress={() => console.log("献立提案！")}
+          onPress={handleSuggestMeals}
         >
           <Animated.View style={[styles.stylishButton, { transform: [{ scale: scaleAnim }] }]}>
             <Text style={styles.submitText}>献立を提案してもらう</Text>
