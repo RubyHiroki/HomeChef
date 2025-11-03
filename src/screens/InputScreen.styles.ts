@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
+    paddingTop: 40, // ステータスバー分の余白を追加
     backgroundColor: "rgba(253, 252, 251, 0.9)", // background-light with opacity
     borderBottomWidth: 1,
     borderBottomColor: "rgba(226, 232, 240, 0.5)", // border-color-light with opacity

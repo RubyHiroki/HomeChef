@@ -38,8 +38,8 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <StatusBar backgroundColor="#FFF7E9" barStyle="dark-content" />
+    <SafeAreaView style={styles.container} edges={[]}>
+      <StatusBar backgroundColor="#FFF7E9" barStyle="dark-content" translucent />
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}>

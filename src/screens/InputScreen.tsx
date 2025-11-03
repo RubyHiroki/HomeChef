@@ -5,12 +5,14 @@ import {
     Animated,
     Keyboard,
     ScrollView,
+    StatusBar,
     Text,
     TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./InputScreen.styles";
 import ResultScreen from "./ResultScreen";
 
@@ -127,7 +129,8 @@ export default function InputScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={[]}>
+      <StatusBar backgroundColor="#FDFCFB" barStyle="dark-content" translucent />
       {/* ヘッダー */}
       <View style={styles.header}>
         <View style={styles.headerPlaceholder} />
@@ -220,6 +223,6 @@ export default function InputScreen() {
           </TouchableWithoutFeedback>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

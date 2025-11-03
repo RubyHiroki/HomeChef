@@ -13,7 +13,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 52, // ステータスバー分の余白を追加
+    paddingBottom: 12,
     backgroundColor: "rgba(255, 248, 242, 0.8)", // background-light with opacity
     backdropFilter: "blur(8px)",
   },

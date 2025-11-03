@@ -4,10 +4,12 @@ import {
     ActivityIndicator,
     Animated,
     ScrollView,
+    StatusBar,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { MealSuggestion, suggestMeals } from "../services/geminiService";
 import RecipeDetailScreen from "./RecipeDetailScreen";
@@ -148,7 +150,8 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={[]}>
+      <StatusBar backgroundColor="#FFF8F2" barStyle="dark-content" translucent />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <MaterialIcons name="arrow-back-ios" size={20} color="#424242" />
@@ -230,6 +233,6 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
           })}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

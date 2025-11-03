@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFF7E9", // brand-cream
     position: "relative",
     overflow: "hidden",
-    paddingTop: 80,
+    paddingTop: 100, // ステータスバー分も含めて余裕を持たせる
     paddingHorizontal: 24,
     paddingBottom: 32,
     marginTop: -1, // 上部の余白を埋める
@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
   // 戻るボタン
   backButtonContainer: {
     position: "absolute",
-    top: 0,
+    top: 40, // ステータスバーの高さ分下げる
     left: 0,
     right: 0,
     zIndex: 10,
