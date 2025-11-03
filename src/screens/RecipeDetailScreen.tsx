@@ -13,7 +13,7 @@ interface RecipeDetailScreenProps {
   recipe: {
     name: string;
     description?: string;
-    imageUrl: string;
+    imageUrl?: string;
     ingredients: string[];
     steps: string[];
   };
@@ -45,14 +45,16 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
       </View>
 
       <ScrollView style={styles.content}>
-        {/* 料理画像 */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: recipe.imageUrl }}
-            style={styles.recipeImage}
-            resizeMode="cover"
-          />
+        {/* 料理画像（画像URLがある場合のみ表示） */}
+        {recipe.imageUrl && (
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: recipe.imageUrl }}
+              style={styles.recipeImage}
+              resizeMode="cover"
+            />
           </View>
+        )}
 
         {/* 材料 */}
         <View style={styles.ingredientsSection}>

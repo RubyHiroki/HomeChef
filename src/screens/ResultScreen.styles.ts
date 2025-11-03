@@ -15,8 +15,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: "rgba(245, 245, 245, 0.8)",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
   },
   headerTitle: {
     fontSize: 18,
@@ -26,7 +24,6 @@ export const styles = StyleSheet.create({
     color: "#333333",
   },
   backButton: {
-    padding: 8,
     width: 40,
     height: 40,
     alignItems: "center",
@@ -40,64 +37,88 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: 32,
   },
   introText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666666",
-    marginVertical: 16,
     paddingHorizontal: 2,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   
-  // 料理カード
+  // 料理カードリスト
   cardList: {
-    gap: 24,
+    gap: 16,
+    paddingBottom: 20,
   },
+  
+  // モダンなカードデザイン
   mealCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    overflow: "hidden",
+    borderRadius: 16,
+    padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  imageContainer: {
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
     position: "relative",
-    height: 160,
-  },
-  mealImage: {
-    width: "100%",
-    height: "100%",
-  },
-  imageFade: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    // 上から下へのグラデーションを設定
-    // React Nativeでは線形グラデーションを直接スタイルとして設定できないため、
-    // LinearGradientコンポーネントを使用します（コード内で実装）
+    overflow: "hidden",
+    height: 120, // 固定高さを設定
   },
   cardContent: {
-    padding: 16,
+    zIndex: 10,
+    flex: 1,
+    justifyContent: "space-between",
   },
   mealTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 8,
     color: "#333333",
+    marginBottom: 8,
   },
   viewMoreContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
   },
   viewMoreText: {
     fontSize: 14,
     color: "#81C784",
     fontWeight: "500",
+  },
+  
+  // デコレーション要素
+  circleDecoration: {
+    position: "absolute",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "rgba(129, 199, 132, 0.2)",
+    top: -15,
+    right: -15,
+  },
+  dotsDecoration: {
+    position: "absolute",
+    bottom: -5,
+    right: -5,
+    flexDirection: "row",
+  },
+  dot: {
+    width: 15,
+    height: 15,
+    borderRadius: 8,
+    backgroundColor: "rgba(129, 199, 132, 0.2)",
+    marginHorizontal: 2,
+  },
+  svgDecoration: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    bottom: -20,
+    left: -20,
+    opacity: 0.2,
   },
   
   // ローディング
