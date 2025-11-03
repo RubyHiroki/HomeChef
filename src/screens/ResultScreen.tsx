@@ -2,6 +2,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Animated,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -31,7 +32,10 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
   const [mealSuggestion, setMealSuggestion] = useState<MealSuggestion | null>(null);
   const [mealsWithImages, setMealsWithImages] = useState<MealWithImage[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<MealWithImage | null>(null);
-
+  
+  // アニメーション用の参照
+  const cardAnimations = React.useRef<Animated.Value[]>([]).current;
+  
   const fetchMealSuggestions = async () => {
     setLoading(true);
     setError(null);
@@ -47,6 +51,15 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
         // 説明文を追加（APIから返ってこない場合はundefined）
         description: undefined
       }));
+      
+      // アニメーション値を設定
+      if (cardAnimations.length < withImages.length) {
+        const newAnims = Array(withImages.length - cardAnimations.length)
+          .fill(0)
+          .map(() => new Animated.Value(0));
+        cardAnimations.push(...newAnims);
+      }
+      
       setMealsWithImages(withImages);
     } catch (err) {
       setError(err instanceof Error ? err.message : "献立の提案に失敗しました");
@@ -58,6 +71,21 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
   useEffect(() => {
     fetchMealSuggestions();
   }, []);
+  
+  // カードが表示されたらアニメーションを開始
+  useEffect(() => {
+    if (!loading && mealsWithImages.length > 0) {
+      // 順番にカードをアニメーションさせる
+      mealsWithImages.forEach((_, index) => {
+        Animated.timing(cardAnimations[index], {
+          toValue: 1,
+          duration: 400,
+          delay: index * 150,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  }, [loading, mealsWithImages]);
 
   // 詳細を表示する処理
   const handleViewDetails = (meal: MealWithImage) => {
@@ -84,13 +112,13 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <MaterialIcons name="arrow-back" size={24} color="#333333" />
+            <MaterialIcons name="arrow-back-ios" size={20} color="#424242" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>AIからの献立提案</Text>
           <View style={styles.emptyView} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#81C784" />
+          <ActivityIndicator size="large" color="#FFA726" />
           <Text style={styles.loadingText}>
             あなたの食材から最適な献立を考えています...
           </Text>
@@ -104,7 +132,7 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <MaterialIcons name="arrow-back" size={24} color="#333333" />
+            <MaterialIcons name="arrow-back-ios" size={20} color="#424242" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>エラー</Text>
           <View style={styles.emptyView} />
@@ -123,7 +151,7 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <MaterialIcons name="arrow-back" size={24} color="#333333" />
+          <MaterialIcons name="arrow-back-ios" size={20} color="#424242" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>AIからの献立提案</Text>
         <View style={styles.emptyView} />
@@ -134,7 +162,7 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.introText}>入力された食材から、こちらの{mealsWithImages.length}つのレシピを提案します。</Text>
+        <Text style={styles.introText}>あなたのおうちの食材から、{"\n"}AIが3つのレシピを提案します。</Text>
         
         <View style={styles.cardList}>
           {mealsWithImages.map((meal, index) => {
@@ -142,47 +170,62 @@ export default function ResultScreen({ ingredients, onBack }: ResultScreenProps)
             const decorationType = index % 3;
             
             return (
-              <TouchableOpacity
+              <Animated.View
                 key={index}
-                style={styles.mealCard}
-                onPress={() => handleViewDetails(meal)}
+                style={{
+                  opacity: cardAnimations[index] || 0,
+                  transform: [
+                    { translateY: (cardAnimations[index] || new Animated.Value(0)).interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0]
+                    }) }
+                  ]
+                }}
               >
-                {/* 装飾1: 円形 */}
-                {decorationType === 0 && (
-                  <View style={styles.circleDecoration} />
-                )}
-                
-                {/* 装飾2: SVG波形 */}
-                {decorationType === 1 && (
-                  <View style={styles.svgDecoration}>
-                    <Svg height="100%" width="100%" viewBox="0 0 200 200">
-                      <Path
-                        d="M48.2,-64.1C62.4,-54.6,73.8,-40.4,79.8,-24.1C85.7,-7.8,86.1,10.7,79.5,26.2C72.8,41.7,59,54.2,44.2,64.2C29.5,74.2,14.7,81.7,-0.3,82.1C-15.3,82.4,-30.7,75.6,-44.7,66.1C-58.7,56.6,-71.4,44.4,-77.7,29.8C-84,15.2,-84,-1.8,-78.6,-16.4C-73.2,-31,-62.4,-43.3,-49.6,-52.7C-36.8,-62.1,-22,-68.6,-6.5,-70.7C9,-72.8,18,-70.5,28.6,-67.9C39.1,-65.2,51.1,-62.1,48.2,-64.1Z"
-                        fill="#81C784"
-                        opacity={0.2}
-                        transform="translate(100 100) scale(1.1)"
-                      />
-                    </Svg>
+                <TouchableOpacity
+                  style={styles.mealCard}
+                  onPress={() => handleViewDetails(meal)}
+                  activeOpacity={0.9}
+                >
+                  {/* 装飾1: 円形 */}
+                  {decorationType === 0 && (
+                    <View style={styles.circleDecoration} />
+                  )}
+                  
+                  {/* 装飾2: SVG波形 */}
+                  {decorationType === 1 && (
+                    <View style={styles.svgDecoration}>
+                      <Svg height="100%" width="100%" viewBox="0 0 200 200">
+                        <Path
+                          d="M50.4,-61C65.5,-51.1,78.2,-36.5,81.8,-19.9C85.4,-3.3,79.9,15.2,70.1,32.3C60.2,49.4,46,65.1,29.3,72.9C12.6,80.8,-6.6,80.8,-24.5,74.7C-42.5,68.6,-59.2,56.5,-69.1,40.9C-79,25.3,-82.1,6.2,-78.7,-11.1C-75.3,-28.4,-65.4,-43.9,-51.9,-54.2C-38.4,-64.5,-21.3,-69.6,-5.3,-68.2C10.7,-66.9,21.3,-59.2,34.1,-55.8C46.8,-52.5,61.6,-53.5,50.4,-61Z"
+                          fill="#FF8A65"
+                          opacity={0.3}
+                          transform="translate(100 100) scale(1.1) rotate(15)"
+                        />
+                      </Svg>
+                    </View>
+                  )}
+                  
+                  {/* 装飾3: ドット */}
+                  {decorationType === 2 && (
+                    <View style={styles.dotsContainer}>
+                      <View style={styles.dot} />
+                      <View style={styles.dot} />
+                      <View style={styles.dot} />
+                    </View>
+                  )}
+                  
+                  <View style={styles.cardContent}>
+                    <Text style={styles.mealTitle}>
+                      {meal.name.includes("\n") ? meal.name : decorationType === 1 ? meal.name.replace(/(.{10})/, "$1\n") : meal.name}
+                    </Text>
+                    <View style={styles.viewMoreContainer}>
+                      <Text style={styles.viewMoreText}>レシピを見る</Text>
+                      <MaterialIcons name="arrow-forward" size={18} color="#F57C00" style={{ marginLeft: 6 }} />
+                    </View>
                   </View>
-                )}
-                
-                {/* 装飾3: ドット */}
-                {decorationType === 2 && (
-                  <View style={styles.dotsDecoration}>
-                    <View style={styles.dot} />
-                    <View style={[styles.dot, { marginTop: 8 }]} />
-                    <View style={styles.dot} />
-                  </View>
-                )}
-                
-                <View style={styles.cardContent}>
-                  <Text style={styles.mealTitle}>{meal.name}</Text>
-                  <View style={styles.viewMoreContainer}>
-                    <Text style={styles.viewMoreText}>詳細を見る</Text>
-                    <MaterialIcons name="arrow-forward" size={18} color="#81C784" style={{ marginLeft: 4 }} />
-                  </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </Animated.View>
             );
           })}
         </View>

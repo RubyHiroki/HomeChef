@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   // 基本レイアウト
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFF8F2", // background-light
   },
   
   // ヘッダー
@@ -14,58 +14,63 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: "rgba(245, 245, 245, 0.8)",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1,
-    color: "#333333",
+    backgroundColor: "rgba(255, 248, 242, 0.8)", // background-light with opacity
+    backdropFilter: "blur(8px)",
   },
   backButton: {
     width: 40,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 20,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+    color: "rgba(66, 66, 66, 0.9)", // text-light with opacity
   },
   emptyView: {
     width: 40,
+    height: 40,
   },
   
-  // コンテンツ
+  // メインコンテンツ
   content: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingBottom: 32,
+    paddingBottom: 48,
+    paddingTop: 16,
   },
   introText: {
-    fontSize: 16,
-    color: "#666666",
-    paddingHorizontal: 2,
-    paddingTop: 16,
-    paddingBottom: 24,
+    fontSize: 14,
+    color: "#757575", // subtext-light
+    textAlign: "center",
+    paddingHorizontal: 8,
+    paddingBottom: 32,
+    lineHeight: 20,
   },
   
-  // 料理カードリスト
+  // カードリスト
   cardList: {
-    gap: 16,
+    gap: 24,
     paddingBottom: 20,
   },
   
-  // モダンなカードデザイン
+  // カードスタイル
   mealCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: "#FFFFFF", // card-light
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: "#FFA726", // primary
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 14,
+    elevation: 4,
     position: "relative",
     overflow: "hidden",
-    height: 120, // 固定高さを設定
+    height: 140,
   },
   cardContent: {
     zIndex: 10,
@@ -73,10 +78,11 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   mealTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333333",
-    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: "900", // extra bold
+    color: "#424242", // text-light
+    marginBottom: 48,
+    lineHeight: 28,
   },
   viewMoreContainer: {
     flexDirection: "row",
@@ -85,40 +91,40 @@ export const styles = StyleSheet.create({
   },
   viewMoreText: {
     fontSize: 14,
-    color: "#81C784",
-    fontWeight: "500",
+    fontWeight: "bold",
+    color: "#F57C00", // primary-dark
   },
   
   // デコレーション要素
   circleDecoration: {
     position: "absolute",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "rgba(129, 199, 132, 0.2)",
-    top: -15,
-    right: -15,
-  },
-  dotsDecoration: {
-    position: "absolute",
-    bottom: -5,
-    right: -5,
-    flexDirection: "row",
-  },
-  dot: {
-    width: 15,
-    height: 15,
-    borderRadius: 8,
-    backgroundColor: "rgba(129, 199, 132, 0.2)",
-    marginHorizontal: 2,
+    width: 144,
+    height: 144,
+    borderRadius: 72,
+    backgroundColor: "rgba(255, 183, 77, 0.3)", // primary-light with opacity
+    top: -48,
+    right: -48,
   },
   svgDecoration: {
     position: "absolute",
-    width: 60,
-    height: 60,
-    bottom: -20,
-    left: -20,
-    opacity: 0.2,
+    width: 150,
+    height: 150,
+    bottom: -64,
+    left: -64,
+    opacity: 0.3,
+  },
+  dotsContainer: {
+    position: "absolute",
+    bottom: -16,
+    right: -16,
+    flexDirection: "row",
+    gap: 8,
+  },
+  dot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FFF3E0", // accent
   },
   
   // ローディング
@@ -129,7 +135,7 @@ export const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    color: "#666666",
+    color: "#757575", // subtext-light
   },
   
   // エラー
@@ -146,7 +152,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: "#81C784",
+    backgroundColor: "#FFA726", // primary
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
