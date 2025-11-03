@@ -1,11 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import {
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./RecipeDetailScreen.styles";
 
 interface RecipeDetailScreenProps {
@@ -36,8 +38,11 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <StatusBar backgroundColor="#FFF7E9" barStyle="dark-content" />
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}>
         {/* ヘッダー部分（背景色付き） */}
         <View style={styles.headerContainer}>
           {/* 装飾用の円 */}
@@ -112,6 +117,6 @@ export default function RecipeDetailScreen({ recipe, onBack }: RecipeDetailScree
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

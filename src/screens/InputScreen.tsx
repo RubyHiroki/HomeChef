@@ -139,7 +139,7 @@ export default function InputScreen() {
       <View style={styles.main}>
         {/* タイトルセクション */}
         <View style={styles.titleSection}>
-          <Text style={styles.title}>冷蔵庫にある食材は？</Text>
+          <Text style={styles.title}>家にある食材は？</Text>
           <Text style={styles.subtitle}>食材を追加して、今日の献立を決めましょう</Text>
         </View>
 

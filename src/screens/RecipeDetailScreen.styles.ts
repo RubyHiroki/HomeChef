@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
     paddingTop: 80,
     paddingHorizontal: 24,
     paddingBottom: 32,
+    marginTop: -1, // 上部の余白を埋める
   },
   
   // 装飾要素
@@ -87,6 +88,7 @@ export const styles = StyleSheet.create({
   contentContainer: {
     backgroundColor: "#FFFBF5", // brand-light
     padding: 24,
+    paddingBottom: 48, // 下部の余白を増やす
   },
   
   // 材料セクション
